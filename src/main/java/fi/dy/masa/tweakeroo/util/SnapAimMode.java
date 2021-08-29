@@ -1,5 +1,9 @@
 package fi.dy.masa.tweakeroo.util;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -11,6 +15,10 @@ public enum SnapAimMode implements IConfigOptionListEntry
 
     private final String configString;
     private final String translationKey;
+    
+    private static final SnapAimMode[] VALUES = values();
+    private final static Map<String, SnapAimMode> FROM_NAME = Arrays.asList(VALUES).stream()
+            .collect(Collectors.toMap((i) -> i.configString.toLowerCase(), (i) -> i));
 
     private SnapAimMode(String configString, String translationKey)
     {
@@ -33,24 +41,12 @@ public enum SnapAimMode implements IConfigOptionListEntry
     @Override
     public IConfigOptionListEntry cycle(boolean forward)
     {
-        int id = this.ordinal();
+        int id = this.ordinal() + (forward ? 1:-1);
 
-        if (forward)
-        {
-            if (++id >= values().length)
-            {
-                id = 0;
-            }
-        }
-        else
-        {
-            if (--id < 0)
-            {
-                id = values().length - 1;
-            }
-        }
+        if (id >= VALUES.length) id = 0;
+        if (id < 0) id = VALUES.length - 1;
 
-        return values()[id % values().length];
+        return VALUES[id];
     }
 
     @Override
@@ -61,14 +57,7 @@ public enum SnapAimMode implements IConfigOptionListEntry
 
     public static SnapAimMode fromStringStatic(String name)
     {
-        for (SnapAimMode mode : SnapAimMode.values())
-        {
-            if (mode.configString.equalsIgnoreCase(name))
-            {
-                return mode;
-            }
-        }
-
-        return SnapAimMode.YAW;
+        if(name == null) return SnapAimMode.YAW;
+        return FROM_NAME.getOrDefault(name.toLowerCase(), SnapAimMode.YAW);
     }
 }

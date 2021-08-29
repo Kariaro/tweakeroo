@@ -1,5 +1,9 @@
 package fi.dy.masa.tweakeroo.util;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -14,6 +18,10 @@ public enum PlacementRestrictionMode implements IConfigOptionListEntry
 
     private final String configString;
     private final String unlocName;
+    
+    private final static PlacementRestrictionMode[] VALUES = values();
+    private final static Map<String, PlacementRestrictionMode> FROM_NAME = Arrays.asList(VALUES).stream()
+            .collect(Collectors.toMap((i) -> i.configString.toLowerCase(), (i) -> i));
 
     private PlacementRestrictionMode(String configString, String unlocName)
     {
@@ -36,24 +44,12 @@ public enum PlacementRestrictionMode implements IConfigOptionListEntry
     @Override
     public IConfigOptionListEntry cycle(boolean forward)
     {
-        int id = this.ordinal();
+        int id = this.ordinal() + (forward ? 1:-1);
 
-        if (forward)
-        {
-            if (++id >= values().length)
-            {
-                id = 0;
-            }
-        }
-        else
-        {
-            if (--id < 0)
-            {
-                id = values().length - 1;
-            }
-        }
+        if (id >= VALUES.length) id = 0;
+        if (id < 0) id = VALUES.length - 1;
 
-        return values()[id % values().length];
+        return VALUES[id];
     }
 
     @Override
@@ -64,14 +60,7 @@ public enum PlacementRestrictionMode implements IConfigOptionListEntry
 
     public static PlacementRestrictionMode fromStringStatic(String name)
     {
-        for (PlacementRestrictionMode mode : PlacementRestrictionMode.values())
-        {
-            if (mode.configString.equalsIgnoreCase(name))
-            {
-                return mode;
-            }
-        }
-
-        return PlacementRestrictionMode.FACE;
+        if(name == null) return PlacementRestrictionMode.FACE;
+        return FROM_NAME.getOrDefault(name.toLowerCase(), PlacementRestrictionMode.FACE);
     }
 }

@@ -134,7 +134,8 @@ public class InventoryUtils
         for (String name : names)
         {
             EquipmentSlot type = null;
-
+            
+            /*
             switch (name)
             {
                 case "mainhand":    type = EquipmentSlot.MAINHAND; break;
@@ -144,6 +145,9 @@ public class InventoryUtils
                 case "legs":        type = EquipmentSlot.LEGS; break;
                 case "feet":        type = EquipmentSlot.FEET; break;
             }
+            */
+            // Equivalent?
+            type = EquipmentSlot.byName(name);
 
             if (type != null)
             {
@@ -948,7 +952,7 @@ public class InventoryUtils
 
     public static void switchToPickedBlock()
     {
-        MinecraftClient mc  = MinecraftClient.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
         PlayerEntity player = mc.player;
         World world = mc.world;
 
